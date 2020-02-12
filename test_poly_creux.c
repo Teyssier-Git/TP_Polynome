@@ -6,7 +6,7 @@
 
 int main (int argc, char **argv)
 {
-  p_polyf_creux_t p1, p2, p3;
+  p_polyf_creux_t p1, p2/*, p3*/;
 
   if (argc != 3)
     {
@@ -22,6 +22,7 @@ int main (int argc, char **argv)
   printf("\n== %s ==\n",argv[2]);
   ecrire_polynome_float (p2) ;
 
+/*
   printf("\n================== Test eval_polynome ===================\n");
   printf("%s : %f\n",argv[1],eval_polynome(p1,1.0));
   printf("%s : %f\n",argv[2],eval_polynome(p2,1.0));
@@ -50,4 +51,5 @@ int main (int argc, char **argv)
   detruire_polynome(p1);
   detruire_polynome(p2);
   detruire_polynome(p3);
+  */
 }

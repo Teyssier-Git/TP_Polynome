@@ -15,19 +15,19 @@ typedef struct co {
 typedef  struct {
     int degre;
     struct co *head;
-} polyf_creux_t ,∗p_polyf_creux_t ;
+} polyf_creux_t , *p_polyf_creux_t ;
 
-p_polyf_t creer_polynome (int degre) ;
+p_polyf_creux_t creer_polynome ();
 
-void init_polynome (p_polyf_t p, float x) ;
+void init_polynome (p_polyf_creux_t p, float x);
 
-void detruire_polynome (p_polyf_t p) ;
+void detruire_polynome (p_polyf_creux_t p);
 
-p_polyf_t lire_polynome_float (char *nom_fichier) ;
+p_polyf_creux_t lire_polynome_float (char *nom_fichier) ;
 
-void ecrire_polynome_float (p_polyf_t p) ;
+void ecrire_polynome_float (p_polyf_creux_t p) ;
 
-int egalite_polynome (p_polyf_t p1, p_polyf_t p2) ;
+/*int egalite_polynome (p_polyf_t p1, p_polyf_t p2) ;
 
 p_polyf_t addition_polynome (p_polyf_t p1, p_polyf_t p2) ;
 
@@ -40,3 +40,4 @@ p_polyf_t multiplication_polynomes (p_polyf_t p1, p_polyf_t p2) ;
 p_polyf_t puissance_polynome (p_polyf_t p, int n) ;
 
 p_polyf_t composition_polynome (p_polyf_t p, p_polyf_t q) ;
+*/

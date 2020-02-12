@@ -5,12 +5,12 @@
 #include "poly_creux.h"
 #include <x86intrin.h>
 
-p_polyf_creux_t creer_polynome (int degre)
+p_polyf_creux_t creer_polynome ()
 {
   p_polyf_creux_t p ;
 
   p = (p_polyf_creux_t) malloc (sizeof (polyf_creux_t)) ;
-  p->degre = degre ;
+  p->degre = 0 ;
   p->head = NULL;
 
   return p ;
@@ -42,24 +42,41 @@ void init_polynome (p_polyf_creux_t p, float x)
             act->degre = i;
             act->coeff = x;
             act = act->suivant;
+        }
     }
 }
 
-void ajout_coef_tete (p_polyf_creux_t p, float coeff, int degre) {
-    if (p->head = NULL) {
+void ajout_coef_trie (p_polyf_creux_t p, float coeff, int degre) {
+    if (p->head == NULL) {
         p->head = (p_coeff_t)malloc(sizeof(coeff_t));
         p->head->degre = degre;
         p->head->coeff = coeff;
         p->head->suivant = NULL;
     } else {
-        p_coeff_t act = p->head;
-        while (act->suivant != NULL) {
-            act = act->suivant;
+        if (p->head->degre > degre) {
+            p_coeff_t nouv = (p_coeff_t)malloc(sizeof(coeff_t));
+            nouv->suivant = p->head;
+            p->head = nouv;
+            nouv->degre = degre;
+            nouv->coeff = coeff;
+        } else {
+            p_coeff_t act = p->head;
+            while (act->suivant != NULL && act->suivant->degre < degre) {
+                act = act->suivant;
+            }
+            if (act->suivant == NULL) {
+                act->suivant = (p_coeff_t)malloc(sizeof(coeff_t));
+                act->suivant->degre = degre;
+                act->suivant->coeff = coeff;
+                act->suivant->suivant = NULL;
+            } else {
+                p_coeff_t nouv = (p_coeff_t)malloc(sizeof(coeff_t));
+                nouv->suivant = act->suivant;
+                act->suivant = nouv;
+                nouv->degre = degre;
+                nouv->coeff = coeff;
+            }
         }
-        act->suivant = (p_coeff_t)malloc(sizeof(coeff_t));
-        act->suivant->degre = degre;
-        act->suivant->coeff = coeff;
-        act->suivant->suivant = NULL;
     }
 }
 
@@ -68,7 +85,7 @@ p_polyf_creux_t lire_polynome_float (char *nom_fichier) //marche pas !!!!!!!!
 {
     FILE *f ;
     p_polyf_creux_t p ;
-    int degre ;
+    int nb ;
     int i  ;
     int cr ;
 
@@ -78,22 +95,24 @@ p_polyf_creux_t lire_polynome_float (char *nom_fichier) //marche pas !!!!!!!!
         exit (-1) ;
     }
 
-    cr = fscanf (f, "%d", &degre) ;
+    cr = fscanf (f, "%d\n", &nb) ;
     if (cr != 1) {
-        fprintf (stderr, "erreur lecture du degre\n") ;
+        fprintf (stderr, "erreur lecture du nombre de coeff\n") ;
         exit (-1) ;
     }
-    p = creer_polynome (degre) ;
+    p = creer_polynome () ;
 
-    for (i = 0 ; i <= degre; i++) {
+    for (i = 0 ; i <= nb; i++) {
         int deg;
-        float coeff;.
-        cr = fscanf (f, "%d %f", &deg,&coeff) ;
-        if (cr != 1) {
+        float coeff;
+        cr = fscanf (f, "%d %f\n", &deg,&coeff) ;
+        if (cr != 2) {
             fprintf (stderr, "erreur lecture coefficient %d\n", i) ;
             exit (-1) ;
         }
-        ajout_coef_tete(p,coeff,deg);
+        if (coeff != 0.0) {
+            ajout_coef_trie(p,coeff,deg);
+        }
     }
 
     fclose (f) ;
@@ -101,19 +120,19 @@ p_polyf_creux_t lire_polynome_float (char *nom_fichier) //marche pas !!!!!!!!
     return p ;
 }
 
-void ecrire_polynome_float (p_polyf_t p)
+void ecrire_polynome_float (p_polyf_creux_t p)
 {
-    int i ;
-
-    printf ("%.1f ", p->coeff [0]) ;
-    if (p->coeff [1] != 0) {
-        printf("+ %.1f x ", p->coeff [1]);
-    }
-
-    for (i = 2 ; i <= p->degre; i++)
-    {
-        if (p->coeff[i] != 0) {
-            printf ("+ %.1f X^%d ", p->coeff [i], i) ;
+    p_coeff_t act = p->head;
+    if (act != NULL) {
+        if (act->degre == 0) {
+            printf ("%.1f ", act->coeff) ;
+        } else {
+            printf ("%.1f X^%d ", act->coeff, act->degre);
+        }
+        act = act->suivant;
+        while (act != NULL) {
+            printf ("+ %.1f X^%d ", act->coeff, act->degre);
+            act = act->suivant;
         }
     }
 
@@ -121,7 +140,7 @@ void ecrire_polynome_float (p_polyf_t p)
 
     return ;
 }
-
+/*
 int egalite_polynome (p_polyf_t p1, p_polyf_t p2)
 {
   // if (p1->degre == p2->degre) {
@@ -250,3 +269,4 @@ p_polyf_t composition_polynome (p_polyf_t p, p_polyf_t q)
     }
     return res ;
 }
+*/
