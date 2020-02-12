@@ -28,9 +28,9 @@ p_polyf_creux_t lire_polynome_float (char *nom_fichier) ;
 void ecrire_polynome_float (p_polyf_creux_t p) ;
 
 int egalite_polynome (p_polyf_creux_t p1, p_polyf_creux_t p2);
-/*
-p_polyf_t addition_polynome (p_polyf_t p1, p_polyf_t p2) ;
 
+p_polyf_creux_t addition_polynome (p_polyf_creux_t p1, p_polyf_creux_t p2) ;
+/*
 p_polyf_t multiplication_polynome_scalaire (p_polyf_t p, float alpha) ;*/
 
 float eval_polynome (p_polyf_creux_t p, float x) ;

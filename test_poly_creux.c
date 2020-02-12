@@ -5,7 +5,7 @@
 
 
 int main (int argc, char **argv) {
-    p_polyf_creux_t p1, p2/*, p3*/;
+    p_polyf_creux_t p1, p2, p3;
 
     if (argc != 3) {
       fprintf (stderr, "deux paramètres (polynomes,fichiers) sont à passer \n") ;
@@ -35,6 +35,11 @@ int main (int argc, char **argv) {
     printf("%s %s %s\n",argv[2],(egalite_polynome(p2,p1) ? "==" : "!="),argv[1]);
     printf("%s %s %s\n",argv[1],(egalite_polynome(p1,p1) ? "==" : "!="),argv[1]);
     printf("%s %s %s\n",argv[2],(egalite_polynome(p2,p2) ? "==" : "!="),argv[2]);
+
+    printf("\n============= Test addition_polynome =============\n");
+    p3 = addition_polynome(p1,p2);
+    printf("%s + %s : ",argv[1],argv[2]);
+    ecrire_polynome_float(p3);
 /*
   printf("\n============= Test multiplication_polynomes =============\n");
   p3 = multiplication_polynomes(p1,p2);
