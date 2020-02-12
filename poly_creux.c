@@ -140,31 +140,34 @@ void ecrire_polynome_float (p_polyf_creux_t p)
 
     return ;
 }
-/*
-int egalite_polynome (p_polyf_t p1, p_polyf_t p2)
+int egalite_polynome (p_polyf_creux_t p1, p_polyf_creux_t p2)
 {
-  // if (p1->degre == p2->degre) {
-  //     for (int i=0; i<=p1->degre; i++) {
-  //           if (p1->coeff[i] != p2->coeff[i]) {
-  //               return 0;
-  //           }
-  //     }
-  //     return 1;
-  // }
-  // return 0 ;
-  int min = min(p1->degre,p2->degre);
-  int max = max(p1->degre,p2->degre);
-  for (int i=0; i<=min; i++) {
-      if (p1->coeff[i] != p2->coeff[i]) {
-          return 0;
-      }
+  if (p1->degre != p2->degre){
+    return 0;
   }
-  p_polyf_t p3 = (max(p1->degre,p2->degre) == p1->degre ? p1 : p2);
-  for (int i=min+1; i<=max; i++) {
-      if (p3->coeff[i] != 0) {
+  else {
+    p_coeff_t mon_cur_p1 = p1->head; //monome courant
+    p_coeff_t mon_cur_p2 = p2->head;
+    while(mon_cur_p1 != NULL && mon_cur_p2 != NULL){
+      if(mon_cur_p1->degre != mon_cur_p2->degre){
+        if (mon_cur_p1->coeff == 0){
+          mon_cur_p1 = mon_cur_p1->suivant;
+        }
+        else if(mon_cur_p2->coeff == 0){
+          mon_cur_p2 = mon_cur_p2->suivant;
+        }
+        else {
           return 0;
+        }
       }
-  }
+      else if(mon_cur_p1->coeff != mon_cur_p2->coeff){
+        return 0;
+      }
+      else {
+        mon_cur_p1 = mon_cur_p1->suivant;
+        mon_cur_p2 = mon_cur_p2->suivant;
+      }
+    }
   return 1;
 }
 
