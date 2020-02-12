@@ -5,12 +5,12 @@
 #include "poly_creux.h"
 #include <x86intrin.h>
 
-p_polyf_creux_t creer_polynome ()
+p_polyf_creux_t creer_polynome (int degre)
 {
   p_polyf_creux_t p ;
 
   p = (p_polyf_creux_t) malloc (sizeof (polyf_creux_t)) ;
-  p->degre = 0 ;
+  p->degre = degre;
   p->head = NULL;
 
   return p ;
@@ -88,6 +88,7 @@ p_polyf_creux_t lire_polynome_float (char *nom_fichier) //marche pas !!!!!!!!
     int nb ;
     int i  ;
     int cr ;
+    int degre = -1;
 
     f = fopen (nom_fichier, "r");
     if (f == NULL) {
@@ -100,7 +101,7 @@ p_polyf_creux_t lire_polynome_float (char *nom_fichier) //marche pas !!!!!!!!
         fprintf (stderr, "erreur lecture du nombre de coeff\n") ;
         exit (-1) ;
     }
-    p = creer_polynome () ;
+    p = creer_polynome (-1) ;
 
     for (i = 0 ; i <= nb; i++) {
         int deg;
@@ -111,11 +112,15 @@ p_polyf_creux_t lire_polynome_float (char *nom_fichier) //marche pas !!!!!!!!
             exit (-1) ;
         }
         if (coeff != 0.0) {
+            if (deg > degre) {
+                degre = deg;
+            }
             ajout_coef_trie(p,coeff,deg);
         }
     }
 
     fclose (f) ;
+    p->degre = degre;
 
     return p ;
 }
@@ -140,34 +145,33 @@ void ecrire_polynome_float (p_polyf_creux_t p)
 
     return ;
 }
-/*
-int egalite_polynome (p_polyf_t p1, p_polyf_t p2)
-{
-  // if (p1->degre == p2->degre) {
-  //     for (int i=0; i<=p1->degre; i++) {
-  //           if (p1->coeff[i] != p2->coeff[i]) {
-  //               return 0;
-  //           }
-  //     }
-  //     return 1;
-  // }
-  // return 0 ;
-  int min = min(p1->degre,p2->degre);
-  int max = max(p1->degre,p2->degre);
-  for (int i=0; i<=min; i++) {
-      if (p1->coeff[i] != p2->coeff[i]) {
-          return 0;
-      }
-  }
-  p_polyf_t p3 = (max(p1->degre,p2->degre) == p1->degre ? p1 : p2);
-  for (int i=min+1; i<=max; i++) {
-      if (p3->coeff[i] != 0) {
-          return 0;
-      }
-  }
-  return 1;
-}
 
+int egalite_polynome (p_polyf_creux_t p1, p_polyf_creux_t p2) {
+    if (p1->degre != p2->degre){
+        return 0;
+    } else {
+        p_coeff_t mon_cur_p1 = p1->head; //monome courant
+        p_coeff_t mon_cur_p2 = p2->head;
+        while(mon_cur_p1 != NULL && mon_cur_p2 != NULL){
+            if(mon_cur_p1->degre != mon_cur_p2->degre){
+                if (mon_cur_p1->coeff == 0){
+                    mon_cur_p1 = mon_cur_p1->suivant;
+                } else if(mon_cur_p2->coeff == 0) {
+                    mon_cur_p2 = mon_cur_p2->suivant;
+                } else {
+                    return 0;
+                }
+            } else if(mon_cur_p1->coeff != mon_cur_p2->coeff) {
+                return 0;
+            } else {
+                mon_cur_p1 = mon_cur_p1->suivant;
+                mon_cur_p2 = mon_cur_p2->suivant;
+            }
+        }
+    }
+    return 1;
+}
+/*
 p_polyf_t addition_polynome (p_polyf_t p1, p_polyf_t p2)
 {
   p_polyf_t p3 ;
@@ -201,17 +205,19 @@ p_polyf_t multiplication_polynome_scalaire (p_polyf_t p, float alpha)
       pN->coeff[i] = p->coeff[i] * alpha;
   }
   return pN;
-}
+}*/
 
-float eval_polynome (p_polyf_t p, float x)
+float eval_polynome (p_polyf_creux_t p, float x)
 {
     float resultat = 0.0;
-    for (int i=0; i<=p->degre; i++) {
-        resultat = resultat + p->coeff[i] * powf(x,(float)i);
+    p_coeff_t act = p->head;
+    while (act != NULL) {
+        resultat = resultat + act->coeff * powf(x,(float)act->degre);
+        act = act->suivant;
     }
     return resultat;
 }
-
+/*
 p_polyf_t multiplication_polynomes (p_polyf_t p1, p_polyf_t p2)
 {
   // p_polyf_t p3 = creer_polynome(p1->degre + p2->degre);
