@@ -212,15 +212,20 @@ p_polyf_creux_t addition_polynome (p_polyf_creux_t p1, p_polyf_creux_t p2){
      p3->degre=deg;
      return p3 ;
 }
-/*
-p_polyf_t multiplication_polynome_scalaire (p_polyf_t p, float alpha)
+
+p_polyf_creux_t multiplication_polynome_scalaire (p_polyf_creux_t p, float alpha)
 {
-  p_polyf_t pN = creer_polynome(p->degre);
-  for (int i=0; i<=p->degre; i++) {
-      pN->coeff[i] = p->coeff[i] * alpha;
-  }
-  return pN;
-}*/
+    if (alpha != 0) {
+        p_polyf_creux_t pN = creer_polynome(p->degre);
+        p_coeff_t act = p->head;
+        while (act != NULL) {
+            ajout_coef_trie(pN, act->coeff * alpha, act->degre);
+            act = act->suivant;
+        }
+        return pN;
+    }
+    return creer_polynome(0);
+}
 
 float eval_polynome (p_polyf_creux_t p, float x)
 {
@@ -232,34 +237,29 @@ float eval_polynome (p_polyf_creux_t p, float x)
     }
     return resultat;
 }
-/*
-p_polyf_t multiplication_polynomes (p_polyf_t p1, p_polyf_t p2)
-{
-  // p_polyf_t p3 = creer_polynome(p1->degre + p2->degre);
-  // init_polynome(p3,0.0);
-  // for (int i=0; i<p1->degre; i++) {
-  //     for (int j=0; j<p2->degre; j++) {
-  //         p3->coeff[i+j] = p3->coeff[i+j] + p1->coeff[i] * p2->coeff[j];
-  //     }
-  // }
-  // return p3;
-  p_polyf_t p = creer_polynome(p1->degre + p2->degre);
-  init_polynome(p,0.0);
-  for (int i = 0; i<=p1->degre; i++){
-      for (int j = 0; j<=p2->degre; j++){
-          if (p1->coeff[i]!=0 && p2->coeff[j]!=0) {
-              p->coeff[i+j] += (p1->coeff[i] * p2->coeff[j]);
-          }
-      }
-  }
-  return p;
+
+p_polyf_creux_t multiplication_polynomes (p_polyf_creux_t p1, p_polyf_creux_t p2){
+    p_polyf_creux_t p = creer_polynome(p1->degre + p2->degre);
+    p_coeff_t mon_cur_p1=p1->head;
+    while (mon_cur_p1 != NULL) {
+        p_polyf_creux_t p4 = creer_polynome(p2->degre + mon_cur_p1->degre);
+        p_coeff_t mon_cur_p2=p2->head;
+        while (mon_cur_p2 != NULL) {
+            float coeff = mon_cur_p1->coeff * mon_cur_p2->coeff;
+            int deg = mon_cur_p1->degre + mon_cur_p2->degre;
+            ajout_coef_trie(p4,coeff,deg);
+            mon_cur_p2 = mon_cur_p2->suivant;
+        }
+        mon_cur_p1 = mon_cur_p1->suivant;
+        p = addition_polynome(p,p4);
+    }
+    return p;
 }
 
-p_polyf_t puissance_polynome (p_polyf_t p, int n)
+p_polyf_creux_t puissance_polynome (p_polyf_creux_t p, int n)
 {
-  p_polyf_t pR = creer_polynome(p->degre * n);
-  init_polynome(pR,0.0);
-  pR->coeff[0] = 1.0;
+  p_polyf_creux_t pR = creer_polynome(p->degre * n);
+  ajout_coef_trie(pR,1.0,0);
 
   while (n>0) {
       pR = multiplication_polynomes(pR,p);
@@ -269,25 +269,13 @@ p_polyf_t puissance_polynome (p_polyf_t p, int n)
   return pR;
 }
 
-p_polyf_t composition_polynome (p_polyf_t p, p_polyf_t q)
+p_polyf_creux_t composition_polynome (p_polyf_creux_t p, p_polyf_creux_t q)
 {
-    // p_polyf_t pR = creer_polynome(p->degre + q->degre));
-    // init_polynome(pR,0.0);
-    //
-    // for (int i=1; i<=p->degre; i++) {
-    //     //if (p->coeff[i]!=0) {
-    //         printf("%f\n",pR->coeff[0]);
-    //         pR = addition_polynome(pR,multiplication_polynome_scalaire(puissance_polynome(q,i),p->coeff[i]));
-    //     //}
-    // }
-    //
-    // return pR ;
-
-    p_polyf_t res = creer_polynome(p->degre+q->degre);
-    init_polynome(res, 0.0);
-    for(int i=0; i<=p->degre; i++){
-        res = addition_polynome(multiplication_polynome_scalaire(puissance_polynome(q,i),p->coeff[i]),res);
+    p_polyf_creux_t res = creer_polynome(p->degre+q->degre);
+    p_coeff_t act = p->head;
+    while (act != NULL) {
+        res = addition_polynome(multiplication_polynome_scalaire(puissance_polynome(q,act->degre),act->coeff),res);
+        act = act->suivant;
     }
     return res ;
 }
-*/

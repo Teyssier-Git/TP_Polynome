@@ -7,13 +7,14 @@
 int main (int argc, char **argv) {
     p_polyf_creux_t p1, p2, p3;
 
-    if (argc != 3) {
+    if (argc != 4) {
       fprintf (stderr, "deux paramètres (polynomes,fichiers) sont à passer \n") ;
       exit (-1) ;
     }
 
     p1 = lire_polynome_float (argv [1]) ;
     p2 = lire_polynome_float (argv [2]) ;
+    float alpha = atof(argv[3]);
 
     printf("== %s ==\n",argv[1]);
     ecrire_polynome_float (p1) ;
@@ -40,16 +41,21 @@ int main (int argc, char **argv) {
     p3 = addition_polynome(p1,p2);
     printf("%s + %s : ",argv[1],argv[2]);
     ecrire_polynome_float(p3);
-/*
-  printf("\n============= Test multiplication_polynomes =============\n");
-  p3 = multiplication_polynomes(p1,p2);
-  printf("%s * %s : ",argv[1],argv[2]);
-  ecrire_polynome_float(p3);
 
-  printf("\n================ Test puissance_polynome ================\n");
-  p3 = puissance_polynome(p1,2);
-  printf("%s^2 : ",argv[1]);
-  ecrire_polynome_float(p3);
+    printf("\n============= Test multiplication_polynome_scalaire =============\n");
+    p3 = multiplication_polynome_scalaire(p1,alpha);
+    printf("%.2f * %s : ",alpha,argv[1]);
+    ecrire_polynome_float(p3);
+
+    printf("\n============= Test multiplication_polynomes =============\n");
+    p3 = multiplication_polynomes(p1,p2);
+    printf("%s * %s : ",argv[1],argv[2]);
+    ecrire_polynome_float(p3);
+
+    printf("\n================ Test puissance_polynome ================\n");
+    p3 = puissance_polynome(p1,2);
+    printf("%s^2 : ",argv[1]);
+    ecrire_polynome_float(p3);
 
   printf("\n=============== Test composition_polynome ===============\n");
   p3 = composition_polynome(p1,p2);
@@ -59,5 +65,5 @@ int main (int argc, char **argv) {
   detruire_polynome(p1);
   detruire_polynome(p2);
   detruire_polynome(p3);
-  */
+  
 }
